@@ -1,0 +1,253 @@
+import React, { Component } from "react";
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    TextInput,
+    Slider,
+    ActivityIndicator,
+    StatusBar,
+    Platform,
+    Alert
+} from "react-native";
+import {
+    Card,
+    CardItem,
+    Thumbnail,
+    Icon,
+    Container,
+    Content,
+    Header,
+    Left,
+    Body,
+    Right,
+    Input,
+    Radio,
+    ListItem,
+    Button,
+    List
+} from "native-base";
+import EntypoIcon from "react-native-vector-icons/Entypo";
+import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
+import { Hideo, Kohana } from "react-native-textinput-effects";
+
+class LogoTitle extends React.Component {
+    render() {
+        return <View style={{ flex: 1, alignItems: "center", backgroundColor: "#2196F3", justifyContent: "center", height: 80, width: "100%", marginTop: Platform.OS == "ios" ? 20 : 0 }}>
+            <StatusBar barStyle="light-content" hidden={false} backgroundColor="#2196F3" translucent={true} networkActivityIndicatorVisible={true} />
+            <Text style={{ color: "white", fontSize: 24 }}>Program Kasir</Text>
+        </View>;
+    }
+}
+
+class Home extends Component {
+    static navigationOptions = {
+        headerTitle: <LogoTitle />,
+        headerLeft: null
+    };
+    constructor(props) {
+        super(props);
+        this.state = {
+            kode: '',
+            jumlah: '',
+            harga: '',
+            total: '',
+            bayar: "",
+            kembalian: "",
+            ActivityIndicator_Loading: false
+        };
+    }
+    componentDidMount() {
+        this.setState(
+            {
+                ActivityIndicator_Loading: true,
+                
+            },
+            () => {
+                fetch(
+                  "https://nukeninkonoha.000webhostapp.com/mobile/cariBarang.php",
+                  {
+                    method: "POST",
+                    headers: {
+                      Accept: "application/json",
+                      "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                      kode: this.state.kode
+                    })
+                  }
+                )
+                  .then(response => response.json())
+                  .then(responseJson => {
+                    this.setState({
+                      data: responseJson,
+                      error: responseJson.error || null,
+                      loading: false,
+                      refreshing: false,
+                      ActivityIndicator_Loading: false
+                    });
+                  })
+                  .catch(error => {
+                    console.error(error);
+                    this.setState({
+                      ActivityIndicator_Loading: false
+                    });
+                  });
+            }
+        );
+    }
+
+    hitung=()=>{
+        this.setState({
+            total: (this.state.jumlah * this.state.harga)
+        })
+    }
+
+    render() {
+        return (
+          <Container style={styles.container}>
+            <View style={styles.BoxClass}>
+              <Kohana
+                style={styles.TextInputStyleClass}
+                label={"Kode Barang"}
+                iconClass={FontAwesomeIcon}
+                iconName={"arrow-up"}
+                iconColor={"#2196F3"}
+                labelStyle={{ color: "#2196F3" }}
+                inputStyle={{ color: "#000000" }}
+                useNativeDriver
+                onChangeText={TextInputText =>
+                  this.setState({ kode: TextInputText })
+                }
+                ref={input => {
+                  this.kode = input;
+                }}
+              />
+              <Kohana
+                style={styles.TextInputStyleClass}
+                label={"Jumlah Beli"}
+                iconClass={FontAwesomeIcon}
+                iconName={"arrow-up"}
+                iconColor={"#2196F3"}
+                labelStyle={{ color: "#2196F3" }}
+                inputStyle={{ color: "#000000" }}
+                useNativeDriver
+                onChangeText={TextInputText =>
+                  this.setState({ jumlah: TextInputText })
+                }
+                ref={input => {
+                  this.jumlah = input;
+                }}
+              />
+
+              
+              <Kohana
+                style={styles.TextInputStyleClass}
+                label={"Harga"}
+                iconClass={FontAwesomeIcon}
+                iconName={"arrow-up"}
+                iconColor={"#2196F3"}
+                labelStyle={{ color: "#2196F3" }}
+                inputStyle={{ color: "#000000" }}
+                useNativeDriver
+                onChangeText={TextInputText =>
+                  this.setState({ harga: TextInputText })
+                }
+                ref={input => {
+                  this.harga = input;
+                }}
+              />
+
+              <View>
+                <Button
+                  activeOpacity={0.5}
+                    onPress={() => this.hitung()}
+                >  
+                    <Text style={styles.TextClass}>Hitung</Text>
+                </Button>
+              </View>
+                   <Text>Total Belanja : Rp. {this.state.total}</Text>
+                    <Kohana
+                        style={styles.TextInputStyleClass}
+                        label={"Uang Bayar"}
+                        iconClass={FontAwesomeIcon}
+                        iconName={"arrow-up"}
+                        iconColor={"#2196F3"}
+                        labelStyle={{ color: "#2196F3" }}
+                        inputStyle={{ color: "#000000" }}
+                        useNativeDriver
+                        onChangeText={TextInputText =>
+                            this.setState({ bayar: TextInputText })
+                        }
+                        ref={input => {
+                            this.bayar = input;
+                        }}
+                    />
+                    <Text>Kembalian : Rp. {this.state.kembalian}</Text>
+            </View>
+          </Container>
+        );
+    }
+}
+
+// define your styles
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    margin: 20,
+    justifyContent: "center"
+  },
+  TextInputStyleClass: {
+    textAlign: "center",
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    //height: '100%',
+    borderColor: "#2196F3",
+    borderRadius: 7,
+    marginBottom: 10
+    // width: "100%"
+  },
+  TextClass: {
+    textAlign: "center",
+    height: 40,
+    width: "100%",
+    marginTop: 10,
+    color: "#FFFFFF",
+    fontSize: 20
+  },
+  TouchableOpacityStyle: {
+    paddingTop: 10,
+    paddingBottom: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#2196F3",
+    marginBottom: 20,
+    height: 40,
+    width: "70%",
+    borderRadius: 7
+  },
+
+  ActivityIndicatorStyle: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  BoxClass: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: "85%",
+    paddingTop: 10,
+    paddingBottom: 15,
+    borderRadius: 7,
+    marginBottom: 10,
+    width: "95%"
+  }
+});
+
+//make this component available to the app
+export default Home;

@@ -1,0 +1,27 @@
+<?php
+
+include_once "connect.php";
+
+ $json = file_get_contents('php://input');
+ $obj = json_decode($json,true);
+ 
+ $kode = $obj['kode'];
+ $result = mysqli_query($conn,"CALL updateProduk($kode)");
+ if(isset($result)){
+    
+    if (empty($result)){
+        $hasil = json_encode('Kode barang salah!');
+     echo $hasil;
+    }else{
+        foreach ($result as $data){
+            echo json_encode($data['harga']);
+        }    
+    }
+}else{
+      $msg = "Data tidak ditemukan!";
+        $hasil = json_encode($msg);
+     echo $hasil;
+ }
+
+ mysqli_close($conn);
+?>

@@ -1,0 +1,7 @@
+DELIMITER //
+CREATE PROCEDURE cekStok(kode_in VARCHAR(12))
+BEGIN
+    SELECT * FROM barang WHERE kode = kode_in;
+    UPDATE barang SET stok=0 WHERE kode = kode_in;
+END //
+DELIMITER ;

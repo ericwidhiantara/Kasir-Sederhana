@@ -1,0 +1,14 @@
+DELIMITER //
+CREATE PROCEDURE cekstokbrg(IN kode_in VARCHAR(11))
+BEGIN
+    DECLARE stok_brg INT;
+ 
+    SELECT stok INTO stok_brg FROM barang WHERE kode = kode_in;
+ 
+    IF stok_brg < 0 THEN
+        CALL cekStok(kode_in);
+    ELSEIF stok_brg > 0 THEN
+        CALL updateProduk(kode_in);
+    END IF;
+END //
+DELIMITER;

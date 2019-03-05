@@ -1,0 +1,31 @@
+<?php
+ 
+	include_once "connect.php";
+	
+	 $json = file_get_contents('php://input');
+	 
+	$obj = json_decode($json,true);
+
+	$kode = $obj['kode'];
+
+	$sql = "SELECT * FROM barang WHERE kode='$kode'";
+	$hasil = mysqli_query($conn, $sql);
+
+	$cek_data=mysqli_num_rows($hasil);
+
+	if ($cek_data > 0){
+        $array = array();
+        while ($row = mysqli_fetch_assoc($hasil)){
+            $array[] = $row; 
+        }
+        echo json_encode($array);
+	}
+	else{
+		$MSG = 'Data tidak ditemukan!' ;
+		$json = json_encode($MSG);
+		echo $json ;
+	 		
+	} //penutup cek data
+	mysqli_close($conn);
+	
+?>
